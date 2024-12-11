@@ -17,17 +17,7 @@ namespace Maternity.API.Controllers
         // GET: api/Patient
         [HttpGet]
         public async Task<ActionResult<IEnumerable<PatientDto>>> GetPatients([FromQuery] string? birthDate)
-        {
-            //var validOperators = new HashSet<string> { "eq", "ge", "le", "gt", "lt", "ne", "sa", "eb", "ap" };
-            //if (birthDate.HasValue && !string.IsNullOrEmpty(birthDateOperator))
-            //{
-            //    if (!validOperators.Contains(birthDateOperator.ToLower()))
-            //    {
-            //        return BadRequest("Invalid birthDate operator. Use eq,ne,lt,gt,ge,le,sa,eb or ap.");
-            //    }
-            //}
-
-
+        {           
             var birthDateOperator = string.Empty;
             var birthDateValue = string.Empty;
             DateTime? birthDateTime = null;
@@ -50,8 +40,6 @@ namespace Maternity.API.Controllers
                 }
             }
 
-
-
             var result = await _patientService.GetAllPatients(birthDateTime, birthDateOperator);
             if (result.Count() > 0)
             {
@@ -59,37 +47,6 @@ namespace Maternity.API.Controllers
             }
             return NotFound();
         }
-
-        //[HttpGet("search")]
-        //public async Task<ActionResult<IEnumerable<PatientDto>>> SearchPatientsByBirthDate([FromQuery] string birthDate)
-        //{
-        //    if (string.IsNullOrEmpty(birthDate))
-        //    {
-        //        return BadRequest("Date parameter is required.");
-        //    }
-
-        //    var birthDateOperator = birthDate.Substring(0, 2);
-        //    var birthDateValue = birthDate.Substring(2);
-
-        //    if (!DateTime.TryParse(birthDateValue, out DateTime parsedDate))
-        //    {
-        //        return BadRequest("Invalid date format.");
-        //    }
-
-        //    var validOperators = new HashSet<string> { "eq", "ge", "le", "gt", "lt", "ne", "sa", "eb", "ap" };
-
-        //    if (!string.IsNullOrEmpty(birthDateOperator) && !validOperators.Contains(birthDateOperator.ToLower()))
-        //    {
-        //        return BadRequest("Invalid birthDate operator. Use eq,ne,lt,gt,ge,le,sa,eb or ap.");
-        //    }
-
-        //    var result = await _patientService.GetAllPatients(parsedDate, birthDateOperator);
-        //    if (result.Count() > 0)
-        //    {
-        //        return result.ToList();
-        //    }
-        //    return NotFound();
-        //}
 
         [HttpGet("{id}")]
         public async Task<ActionResult<PatientDto>> GetPatient(long id)
