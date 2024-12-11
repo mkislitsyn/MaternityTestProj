@@ -1,0 +1,53 @@
+services:
+  db:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    container_name: mssql-db   
+    ports:
+      - "1433:1433"
+    networks:
+      - app-network
+    environment:
+      SA_PASSWORD: "MaternityPassword!"
+      ACCEPT_EULA: "Y"
+      MSSQL_TCP_PORT: 1433
+      MSSQL_TLS_ENABLED: "false"
+    volumes:
+      - sql_data:/var/opt/mssql
+
+  api:    
+    build:
+      context: .
+      dockerfile: Maternity/Dockerfile
+    container_name: maternity-api  
+    ports:
+      - "7000:80"
+    networks:
+      - app-network
+    environment:
+      ConnectionStrings__DefaultConnection: "Server=mssql-db,1433;Database=MaternityDb;User Id=sa;Password=MaternityPassword!;Encrypt=False;"
+    depends_on:
+      - db
+    healthcheck:
+      test: curl -f http://maternity-api/health
+      interval: 10s
+      timeout: 10s
+      retries: 5
+
+  console:    
+    build:
+      context: .
+      dockerfile: PatientAutoGenerator/Dockerfile
+    container_name: maternity-console
+    networks:
+      - app-network
+    depends_on:
+      api:
+       condition: service_healthy
+    environment: 
+    - API_URL=http://maternity-api/api/patients
+
+volumes:
+  sql_data:
+  
+networks:
+  app-network:
